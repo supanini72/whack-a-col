@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Whack-a-Col'</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'BPReplay';
+            src: url('BPreplay.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #13233b;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #title {
+            position: absolute;
+            top: 25px;
+            left: 30px;
+            font-family: 'BPReplay', sans-serif;
+            font-size: 3.5rem;
+            color: #ffffff;
+            z-index: 10;
+            text-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4);
+        }
+
+        #top-right-logo {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            width: 150px;
+            height: auto;
+            z-index: 10;
+            filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.3));
+        }
+
+        #score-container {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            z-index: 10;
+        }
+
+        .score-label { font-size: 2.5rem; display: block; }
+        #score-value {
+            color: #ed5e21;
+            font-size: 6rem;
+            display: block;
+            margin-top: -5px;
+            text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'BPReplay', sans-serif;
+            font-size: 4.5rem;
+            color: #ed5e21;
+            display: none;
+            text-align: center;
+            background: rgba(19, 35, 59, 0.95);
+            padding: 50px;
+            border-radius: 40px;
+            border: 6px solid #ed5e21;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        canvas { display: block; }
+        .shake { animation: shake 0.4s; }
+        @keyframes shake {
+            0%, 100% { transform: translate(0,0); }
+            20% { transform: translate(-8px, 0); }
+            40% { transform: translate(8px, 0); }
+            60% { transform: translate(-8px, 0); }
+            80% { transform: translate(8px, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="title">Whack-a-Col'</div>
+
+    <img src="ABE logo.png" id="top-right-logo" alt="ABE Logo">
+    
+    <div id="score-container">
+        <span class="score-label">Score</span>
+        <span id="score-value">0</span>
+    </div>
+
+    <div id="game-over" onclick="resetGame()">
+        GAME OVER<br>
+        <span id="reason" style="font-size: 1.2rem; color: #ff9f43; display: block; margin-top: 10px; font-family: 'Roboto'; line-height: 1.4;"></span>
+        <span style="font-size: 1.6rem; color: #ffffff; font-family: 'Roboto'; margin-top: 15px; display: block;">Cliquer pour rejouer</span>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreValue = document.getElementById('score-value');
+        const gameOverElement = document.getElementById('game-over');
+        const reasonElement = document.getElementById('reason');
+
+        let score = 0;
+        let gameActive = true;
+        let colonies = [];
+        let spawnRate = 800; // 1.5x plus rapide (1200 / 1.5)
+        let lastSpawn = 0;
+        let petriRadius = 0;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            petriRadius = Math.min(canvas.width, canvas.height) * 0.38;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Colonie {
+            constructor(isTrap = false) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * (petriRadius * 0.75);
+                this.x = canvas.width / 2 + Math.cos(angle) * distance;
+                this.y = canvas.height / 2 + Math.sin(angle) * distance;
+                this.isTrap = isTrap;
+                
+                // Démarre à 1px
+                this.radius = 1; 
+                // Croissance 1.5x plus rapide (0.58 * 1.5 = 0.87)
+                this.growth = 0.87; 
+                this.maxTrapSize = 10;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                if (this.isTrap) {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fill();
+                    ctx.strokeStyle = '#e6e6e6';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = '#40E0D0';
+                    ctx.fill();
+                    ctx.strokeStyle = '#3bc4b7';
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                }
+                ctx.closePath();
+            }
+
+            update() {
+                if (!gameActive) return;
+
+                // Les turquoises grandissent toujours
+                if (!this.isTrap) {
+                    this.radius += this.growth;
+                } else if (this.radius < this.maxTrapSize) {
+                    // Les blanches montent jusqu'à 10px puis s'arrêtent
+                    this.radius += this.growth;
+                }
+
+                const distToCenter = Math.sqrt(
+                    Math.pow(this.x - canvas.width / 2, 2) + 
+                    Math.pow(this.y - canvas.height / 2, 2)
+                );
+
+                if (!this.isTrap && distToCenter + this.radius >= petriRadius) {
+                    endGame("Une colonie a débordé !");
+                }
+            }
+        }
+
+        function drawPetriDish() {
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, petriRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff9db';
+            ctx.shadowBlur = 40;
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, petriRadius * 0.85, 0, Math.PI * 2);
+            ctx.strokeStyle = '#f1e1a6';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, petriRadius, 0, Math.PI * 2);
+            ctx.lineWidth = 14; 
+            ctx.strokeStyle = '#e1e8ed';
+            ctx.stroke();
+
+            ctx.save();
+            ctx.beginPath(); ctx.arc(cx, cy, petriRadius, 0, Math.PI * 2); ctx.clip();
+            ctx.beginPath(); ctx.arc(cx, cy, petriRadius, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(0,0,0,0.05)';
+            ctx.lineWidth = 40; ctx.shadowBlur = 20; ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function handleInput(e) {
+            if (!gameActive) return;
+            const rect = canvas.getBoundingClientRect();
+            const clientX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            const clientY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+
+            for (let i = colonies.length - 1; i >= 0; i--) {
+                const c = colonies[i];
+                const dist = Math.sqrt(Math.pow(clientX - c.x, 2) + Math.pow(clientY - c.y, 2));
+                
+                // Marge de clic augmentée car les colonies sont plus petites au début
+                if (dist <= c.radius + 18) {
+                    if (c.isTrap) {
+                        endGame("Ici on ne compte que les colonies caractéristiques !");
+                        return;
+                    }
+                    colonies.splice(i, 1);
+                    score++;
+                    scoreValue.innerText = score;
+                    spawnRate = Math.max(180, spawnRate * 0.95);
+                    return;
+                }
+            }
+        }
+
+        function endGame(reason) {
+            if (!gameActive) return;
+            gameActive = false;
+            reasonElement.innerText = reason;
+            canvas.classList.add('shake');
+            setTimeout(() => { gameOverElement.style.display = 'block'; }, 200);
+        }
+
+        function resetGame() {
+            score = 0; scoreValue.innerText = "0";
+            colonies = []; gameActive = true; spawnRate = 800;
+            canvas.classList.remove('shake');
+            gameOverElement.style.display = 'none';
+            lastSpawn = performance.now();
+            requestAnimationFrame(animate);
+        }
+
+        canvas.addEventListener('mousedown', handleInput);
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleInput(e); }, { passive: false });
+
+        function animate(time) {
+            if (!gameActive) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPetriDish();
+
+            if (time - lastSpawn > spawnRate) {
+                const isTrap = Math.random() < 0.25;
+                colonies.push(new Colonie(isTrap));
+                lastSpawn = time;
+            }
+
+            colonies.forEach(c => { c.update(); c.draw(); });
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>
