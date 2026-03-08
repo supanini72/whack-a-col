@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Whack-a-Col'</title>
+    <title>Whack-a-Col' Pro</title>
     
     <link rel="icon" type="image/svg+xml" href="colonie-orange.svg">
     <link rel="apple-touch-icon" href="logo-wack-a-col.svg">
@@ -18,163 +18,264 @@
 
         body {
             margin: 0; padding: 0; display: flex; justify-content: center; align-items: center;
-            height: 100vh; 
-            /* --- AJOUT DU FOND SVG --- */
-            background-image: url('fond.svg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            /* ------------------------- */
-            font-family: 'Roboto', sans-serif;
-            overflow: hidden; touch-action: none;
+            height: 100vh; background-image: url('fond.svg'); background-size: cover;
+            background-position: center; font-family: 'Roboto', sans-serif;
+            overflow: hidden; touch-action: none; background-color: #13233b;
         }
 
-        /* --- LOGO ABE (Haut Droite) --- */
-        .abe-logo {
-            position: absolute; top: 25px; right: 30px; width: 150px; z-index: 150;
-        }
+        /* LOGOS */
+        .abe-logo { position: absolute; top: 25px; right: 30px; width: 150px; z-index: 500; }
+        #game-logo-top { position: absolute; top: 25px; left: 30px; width: 220px; z-index: 10; }
 
         /* --- ÉCRAN D'ACCUEIL --- */
         #start-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(19, 35, 59, 0.9); /* Semi-transparent pour voir le fond derrière */
-            display: flex; flex-direction: column;
+            background-color: rgba(19, 35, 59, 0.85); display: flex; flex-direction: column;
             justify-content: center; align-items: center; z-index: 200; text-align: center;
         }
         .home-logo { width: 560px; height: auto; margin-bottom: 20px; }
-        .home-instruction { color: #ffffff; font-size: 1.5rem; margin: 30px 0; max-width: 600px; opacity: 0.9; }
-
-        @keyframes pulseBtn {
-            0%, 100% { transform: scale(1); box-shadow: 0 10px 0 #b34316; }
-            50% { transform: scale(1.05); box-shadow: 0 12px 20px rgba(237, 94, 33, 0.4); }
-        }
+        .home-instruction { color: #ffffff; font-size: 1.4rem; margin: 20px 0; max-width: 700px; line-height: 1.5; padding: 0 20px; }
 
         #play-button {
             background-color: #ed5e21; color: white; font-family: 'BPReplay', sans-serif;
             font-size: 2.5rem; padding: 20px 60px; border: none; border-radius: 50px;
-            cursor: pointer; box-shadow: 0 10px 0 #b34316; 
-            animation: pulseBtn 2s infinite ease-in-out; transition: transform 0.1s;
+            cursor: pointer; box-shadow: 0 10px 0 #b34316; transition: transform 0.1s;
         }
-        #play-button:active { transform: translateY(7px); box-shadow: 0 3px 0 #b34316; }
 
-        /* --- INTERFACE DE JEU --- */
-        #game-logo-top {
-            position: absolute; top: 25px; left: 30px; width: 220px; z-index: 10;
+        /* --- FORMULAIRE INSCRIPTION --- */
+        #registration-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(19, 35, 59, 0.95); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 300; color: white;
         }
-        
+        .form-container { background: rgba(255,255,255,0.1); padding: 40px; border-radius: 30px; border: 2px solid #ed5e21; width: 450px; text-align: center; }
+        .form-logo { width: 250px; margin-bottom: 30px; }
+        .form-container input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 2px solid transparent; font-size: 1.1rem; box-sizing: border-box; }
+        .form-container input:focus { border-color: #ed5e21; outline: none; }
+        .btn-start { background: #ed5e21; color: white; border: none; padding: 20px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 1.2rem; cursor: pointer; margin-top: 10px; }
+
+        /* --- INTERFACE SCORE & RECORD --- */
         .score-box {
             position: absolute; top: 50%; transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.2); padding: 20px 30px; border-radius: 20px;
+            background: rgba(255, 255, 255, 0.2); padding: 20px; border-radius: 20px;
             border: 2px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(5px);
-            text-align: center; z-index: 10; min-width: 150px; color: white;
+            text-align: center; z-index: 10; min-width: 180px; color: white;
             box-shadow: 15px 15px 30px rgba(0, 0, 0, 0.5);
         }
         #score-container { left: 30px; }
         #best-container { right: 30px; }
         
-        .score-label { font-weight: bold; letter-spacing: 2px; font-size: 0.9rem; display: block; margin-bottom: 5px; }
-        .score-num { color: #ed5e21; font-size: 6rem; font-weight: 700; display: block; line-height: 1; }
-        #best-value { color: #ffbc42; }
+        .score-label { font-weight: bold; letter-spacing: 1px; font-size: 0.8rem; display: block; }
+        .score-num { color: #ed5e21; font-size: 5rem; font-weight: 700; line-height: 1; }
+        #leaderboard { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); text-align: left; }
+        .leader-entry { display: flex; justify-content: space-between; font-size: 0.9rem; color: #ffbc42; margin-bottom: 4px; }
 
-        #reset-best {
-            position: absolute; bottom: 15px; right: 15px; 
-            background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.15);
-            border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;
-            font-size: 0.7rem; z-index: 20;
-        }
-
-        /* Game Over */
+        /* --- GAME OVER --- */
         #game-over {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-family: 'BPReplay', sans-serif; font-size: 4rem; color: #ed5e21;
-            display: none; text-align: center; background: rgba(19, 35, 59, 0.98);
-            padding: 50px; border-radius: 40px; border: 6px solid #ed5e21; z-index: 100;
-            box-shadow: 0 0 60px rgba(0,0,0,0.9); cursor: pointer;
+            font-family: 'BPReplay', sans-serif; display: none; text-align: center;
+            background: rgba(19, 35, 59, 0.98); padding: 50px; border-radius: 40px;
+            border: 6px solid #ed5e21; z-index: 400; box-shadow: 0 0 60px rgba(0,0,0,0.9);
         }
-        .show-game-over { display: block !important; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-next { background: #ed5e21; color: white; border: none; padding: 15px 40px; border-radius: 10px; font-family: 'Roboto'; font-weight: bold; font-size: 1.2rem; margin-top: 20px; cursor: pointer; }
 
-        @keyframes popIn {
-            0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        /* --- BOUTON ADMIN --- */
+        #admin-btn {
+            position: absolute; bottom: 20px; right: 20px; 
+            background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4);
+            border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; 
+            border-radius: 5px; cursor: pointer; font-size: 0.8rem; z-index: 600;
         }
+        #admin-btn:hover { background: rgba(255,255,255,0.2); color: white; }
 
         canvas { display: block; }
         .shake { animation: shake 0.4s; }
-        @keyframes shake {
-            0%, 100% { transform: translate(0,0); }
-            25% { transform: translate(-10px, 0); }
-            75% { transform: translate(10px, 0); }
-        }
+        @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-10px, 0); } 75% { transform: translate(10px, 0); } }
     </style>
 </head>
 <body>
 
-    <img src="ABE logo.png" class="abe-logo" alt="Alliance Bio Expertise">
+    <img src="ABE logo.png" class="abe-logo">
 
     <div id="start-screen">
-        <img src="logo-wack-a-col.svg" class="home-logo" alt="Logo Whack-a-Col">
-        <p class="home-instruction">Sur ce milieu TBX, comptez les colonies caractéristiques !</p>
-        <button id="play-button" onclick="startGame()">Jouer</button>
+        <img src="logo-wack-a-col.svg" class="home-logo">
+        <div class="home-instruction">
+            Sur ce milieu TBX, on ne compte que les colonies caractéristiques !<br>
+            <strong>Faites le meilleur score et tentez de remporter une surprise, vous avez 3 essais !</strong>
+        </div>
+        <button id="play-button" onclick="showRegistration()">Jouer</button>
+    </div>
+
+    <div id="registration-screen">
+        <div class="form-container">
+            <img src="logo-wack-a-col.svg" class="form-logo">
+            <form id="regForm" onsubmit="event.preventDefault(); validateRegistration();">
+                <input type="text" id="p_pseudo" placeholder="Pseudo" required>
+                <input type="text" id="p_prenom" placeholder="Prénom" required>
+                <input type="text" id="p_nom" placeholder="Nom" required>
+                <input type="email" id="p_email" placeholder="Email (ex: nom@domaine.com)" required>
+                <button type="submit" class="btn-start">Je suis prêt.e à compter !</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="game-over">
+        <h1 style="color:#ed5e21; margin:0">GAME OVER</h1>
+        <p id="reason" style="font-size:1.4rem; color:#ff9f43; font-family:'Roboto'; margin: 15px 0;"></p>
+        <p id="session-score-msg" style="color:white; font-size:1.5rem; font-family:'Roboto'"></p>
+        <button id="next-btn" class="btn-next" onclick="nextSession()">Session Suivante</button>
     </div>
 
     <img src="logo-wack-a-col.svg" id="game-logo-top">
-
+    
     <div id="score-container" class="score-box">
         <span class="score-label">SCORE</span>
         <span id="score-value" class="score-num">0</span>
+        <span id="session-label" style="display:block; margin-top:10px; opacity:0.8">Session 1 / 3</span>
     </div>
 
     <div id="best-container" class="score-box">
         <span class="score-label">RECORD</span>
-        <span id="best-value" class="score-num">0</span>
+        <span id="best-value" class="score-num" style="font-size: 3.5rem; color:#ffbc42">0</span>
+        <div id="leaderboard">
+            <div style="font-weight:bold; margin-bottom:8px; font-size:0.7rem; opacity:0.6; letter-spacing:1px">TOP 3</div>
+            <div id="top-entries"></div>
+        </div>
     </div>
 
-    <button id="reset-best" onclick="resetBestScore()">Reset Data</button>
-    
-    <div id="game-over" onclick="resetGame()">
-        GAME OVER<br>
-        <span id="reason" style="font-size:1.6rem; color:#ff9f43; display:block; margin-top:15px; font-family:'Roboto'"></span>
-        <span style="font-size:1.4rem; color:white; font-family:'Roboto'; margin-top:25px; display:block; font-weight: bold;">CLIQUER POUR REJOUER</span>
-    </div>
+    <button id="admin-btn" onclick="openAdminMenu()">ADMIN PANEL</button>
 
     <canvas id="gameCanvas"></canvas>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const scoreValue = document.getElementById('score-value');
-        const bestValue = document.getElementById('best-value');
-        const gameOverElement = document.getElementById('game-over');
-        const reasonElement = document.getElementById('reason');
-        const startScreen = document.getElementById('start-screen');
-
+        
         const imgBoite = new Image(); imgBoite.src = 'Boite.svg';
         const imgBleue = new Image(); imgBleue.src = 'Colonie-bleue.svg';
         const imgBlanche = new Image(); imgBlanche.src = 'Colonie-blanche.svg';
         const imgOndule = new Image(); imgOndule.src = 'colonie-ondule.svg';
 
-        let score = 0;
-        let bestScore = localStorage.getItem('whackBestScore') || 0;
-        bestValue.innerText = bestScore;
-
-        let gameActive = false, colonies = [], spawnRate = 800, lastSpawn = 0;
+        let currentPlayer = null;
+        let currentSession = 1;
+        let sessionScores = [];
+        let score = 0, gameActive = false, colonies = [], spawnRate = 800, lastSpawn = 0;
         let petriRadius = 0, maxColonySize = 0;
 
+        updateLeaderboardDisplay();
+
+        function showRegistration() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('registration-screen').style.display = 'flex';
+        }
+
+        function validateRegistration() {
+            const emailField = document.getElementById('p_email');
+            if(!emailField.checkValidity()) { alert("Veuillez entrer une adresse email valide."); return; }
+            currentPlayer = {
+                pseudo: document.getElementById('p_pseudo').value,
+                prenom: document.getElementById('p_prenom').value,
+                nom: document.getElementById('p_nom').value,
+                email: emailField.value,
+                heure: new Date().toLocaleTimeString(),
+                date: new Date().toLocaleDateString()
+            };
+            currentSession = 1; sessionScores = [];
+            document.getElementById('registration-screen').style.display = 'none';
+            startNewGame();
+        }
+
+        function startNewGame() {
+            score = 0; colonies = []; spawnRate = 800; gameActive = true;
+            document.getElementById('score-value').innerText = "0";
+            document.getElementById('session-label').innerText = `Session ${currentSession} / 3`;
+            document.getElementById('game-over').style.display = 'none';
+            canvas.classList.remove('shake');
+            lastSpawn = performance.now();
+            resize(); requestAnimationFrame(animate);
+        }
+
+        function endGame(r) {
+            gameActive = false;
+            sessionScores.push(score);
+            canvas.classList.add('shake');
+            document.getElementById('reason').innerText = r;
+            document.getElementById('session-score-msg').innerText = `Score : ${score}`;
+            const btn = document.getElementById('next-btn');
+            if(currentSession < 3) {
+                btn.innerText = "Session Suivante";
+            } else {
+                const total = sessionScores.reduce((a,b) => a+b, 0);
+                const max = Math.max(...sessionScores);
+                document.getElementById('session-score-msg').innerHTML = `Score : ${score}<br><br>Bien ${currentPlayer.pseudo} : vous avez compté ${total} colonies caractéristiques !`;
+                btn.innerText = "Terminer";
+                savePlayerData(total, max);
+            }
+            setTimeout(() => { document.getElementById('game-over').style.display = 'block'; }, 300);
+        }
+
+        function nextSession() {
+            if(currentSession < 3) { currentSession++; startNewGame(); } 
+            else { location.reload(); }
+        }
+
+        function savePlayerData(total, max) {
+            let players = JSON.parse(localStorage.getItem('whack_players') || '[]');
+            currentPlayer.s1 = sessionScores[0]; currentPlayer.s2 = sessionScores[1]; currentPlayer.s3 = sessionScores[2];
+            currentPlayer.total = total; currentPlayer.best = max;
+            players.push(currentPlayer);
+            localStorage.setItem('whack_players', JSON.stringify(players));
+            updateLeaderboardDisplay();
+        }
+
+        function updateLeaderboardDisplay() {
+            let players = JSON.parse(localStorage.getItem('whack_players') || '[]');
+            players.sort((a,b) => b.best - a.best);
+            const top = players.slice(0, 3);
+            const container = document.getElementById('top-entries');
+            container.innerHTML = '';
+            top.forEach((p, i) => {
+                container.innerHTML += `<div class="leader-entry"><span>${i+1}. ${p.pseudo}</span><span>${p.best}</span></div>`;
+            });
+            document.getElementById('best-value').innerText = top.length > 0 ? top[0].best : 0;
+        }
+
+        function openAdminMenu() {
+            const mdp = prompt("Mot de passe Admin :");
+            if(mdp === "jvlivs") {
+                const action = prompt("Tapez 'CSV' pour exporter les données ou 'RESET' pour tout effacer :");
+                if(action && action.toUpperCase() === 'CSV') {
+                    adminExport();
+                } else if(action && action.toUpperCase() === 'RESET') {
+                    if(confirm("Attention : Cela va supprimer tous les scores et le Top 3. Confirmer ?")) {
+                        localStorage.removeItem('whack_players');
+                        updateLeaderboardDisplay();
+                        alert("Données réinitialisées.");
+                    }
+                }
+            } else if(mdp !== null) { alert("Accès refusé."); }
+        }
+
+        function adminExport() {
+            let players = JSON.parse(localStorage.getItem('whack_players') || '[]');
+            if(players.length === 0) { alert("Aucune donnée à exporter."); return; }
+            let csv = "Date;Heure;Pseudo;Prenom;Nom;Email;S1;S2;S3;Total;MeilleurScore\n";
+            players.forEach(p => {
+                csv += `${p.date};${p.heure};${p.pseudo};${p.prenom};${p.nom};${p.email};${p.s1};${p.s2};${p.s3};${p.total};${p.best}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `Data_Salon_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
         function resize() {
-            canvas.width = window.innerWidth; 
-            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             petriRadius = Math.min(canvas.width, canvas.height) * 0.40;
             maxColonySize = Math.min(canvas.width, canvas.height) * 0.35;
         }
         window.addEventListener('resize', resize);
-        resize();
-
-        function startGame() { 
-            startScreen.style.display = 'none'; 
-            gameActive = true; 
-            lastSpawn = performance.now();
-            requestAnimationFrame(animate);
-        }
 
         class Colonie {
             constructor(isTrap = false) {
@@ -183,19 +284,14 @@
                 this.x = canvas.width / 2 + Math.cos(angle) * dist;
                 this.y = canvas.height / 2 + Math.sin(angle) * dist;
                 this.isTrap = isTrap; this.radius = 1; this.growth = 0.87;
-                if (!isTrap) {
-                    this.img = imgBleue; this.maxS = 999; 
-                } else {
-                    if (Math.random() < 0.5) { this.img = imgBlanche; this.maxS = 15; }
-                    else { this.img = imgOndule; this.maxS = 25; }
-                }
+                if (!isTrap) { this.img = imgBleue; this.maxS = 999; } 
+                else { this.img = (Math.random() < 0.5) ? imgBlanche : imgOndule; this.maxS = (this.img === imgBlanche) ? 15 : 25; }
             }
             draw() {
                 const visR = this.isTrap ? this.radius : Math.min(this.radius, maxColonySize / 2);
                 ctx.drawImage(this.img, this.x - visR, this.y - visR, visR * 2, visR * 2);
             }
             update() {
-                if (!gameActive) return;
                 if (!this.isTrap || this.radius < this.maxS) this.radius += this.growth;
                 const d = Math.sqrt(Math.pow(this.x - canvas.width/2, 2) + Math.pow(this.y - canvas.height/2, 2));
                 if (!this.isTrap && d + this.radius >= petriRadius) endGame("Une colonie a débordé !");
@@ -212,45 +308,10 @@
                 const visR = c.isTrap ? c.radius : Math.min(c.radius, maxColonySize / 2);
                 if (Math.sqrt(Math.pow(cx - c.x, 2) + Math.pow(cy - c.y, 2)) <= visR + 25) {
                     if (c.isTrap) return endGame("Ici on ne compte que les colonies caractéristiques !");
-                    colonies.splice(i, 1);
-                    score++;
-                    scoreValue.innerText = score;
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestValue.innerText = bestScore;
-                        localStorage.setItem('whackBestScore', bestScore);
-                    }
-                    spawnRate = Math.max(180, spawnRate * 0.95);
-                    return;
+                    colonies.splice(i, 1); score++;
+                    document.getElementById('score-value').innerText = score;
+                    spawnRate = Math.max(180, spawnRate * 0.95); return;
                 }
-            }
-        }
-
-        function endGame(r) { 
-            gameActive = false; 
-            reasonElement.innerText = r; 
-            canvas.classList.add('shake'); 
-            setTimeout(() => { gameOverElement.classList.add('show-game-over'); }, 200); 
-        }
-
-        function resetGame() { 
-            score = 0; scoreValue.innerText = "0"; colonies = []; 
-            gameActive = true; spawnRate = 800; 
-            canvas.classList.remove('shake'); 
-            gameOverElement.classList.remove('show-game-over'); 
-            lastSpawn = performance.now(); 
-            requestAnimationFrame(animate); 
-        }
-
-        function resetBestScore() {
-            const mdp = prompt("Mot de passe :");
-            if (mdp === "jvlivs") {
-                bestScore = 0;
-                localStorage.setItem('whackBestScore', 0);
-                bestValue.innerText = 0;
-                alert("Record réinitialisé.");
-            } else if (mdp !== null) {
-                alert("Accès refusé.");
             }
         }
 
@@ -261,10 +322,7 @@
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(imgBoite, canvas.width/2 - petriRadius*1.05, canvas.height/2 - petriRadius*1.05, petriRadius*2.1, petriRadius*2.1);
-            if (t - lastSpawn > spawnRate) {
-                colonies.push(new Colonie(Math.random() < 0.35));
-                lastSpawn = t;
-            }
+            if (t - lastSpawn > spawnRate) { colonies.push(new Colonie(Math.random() < 0.35)); lastSpawn = t; }
             colonies.forEach(c => { c.update(); c.draw(); });
             requestAnimationFrame(animate);
         }
