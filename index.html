@@ -24,21 +24,18 @@
 
         body {
             margin: 0; padding: 0; display: flex; justify-content: center; align-items: center;
-            height: 100vh; width: 100vw; background-image: url('fond.svg'); background-size: cover;
+            height: 100dvh; width: 100vw; background-image: url('fond.svg'); background-size: cover;
             background-position: center; font-family: 'Roboto', sans-serif;
             overflow: hidden; touch-action: none; background-color: #13233b;
         }
 
-        /* --- LOGOS --- */
         .abe-logo { position: absolute; top: 20px; right: 25px; width: 140px; z-index: 500; }
         #game-logo-top { position: absolute; top: 20px; left: 25px; width: 200px; z-index: 10; }
 
-        /* --- ÉCRANS (Transparence et flou) --- */
         .overlay-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(19, 35, 59, 0.7); /* Plus transparent */
-            backdrop-filter: blur(10px); /* Effet de flou arrière-plan */
-            -webkit-backdrop-filter: blur(10px);
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+            background-color: rgba(19, 35, 59, 0.7); 
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             display: flex; flex-direction: column;
             justify-content: center; align-items: center; z-index: 1000; text-align: center;
         }
@@ -53,7 +50,6 @@
         }
         .btn-main:active { transform: translateY(4px); box-shadow: 0 4px 0 #b34316; }
 
-        /* --- FORMULAIRE --- */
         .form-container { 
             background: rgba(255,255,255,0.1); 
             padding: 30px; border-radius: 25px; border: 2px solid #ed5e21; 
@@ -68,7 +64,6 @@
             cursor: pointer; width: 100%; margin-top: 15px; box-shadow: 0 4px 0 #b34316;
         }
 
-        /* --- INTERFACE SCORES --- */
         .score-box {
             position: absolute; top: 50%; transform: translateY(-50%);
             background: rgba(255, 255, 255, 0.15); padding: 20px; border-radius: 20px;
@@ -79,27 +74,27 @@
         #best-container { right: 20px; }
         
         .score-label { font-size: 0.75rem; font-weight: bold; display: block; margin-bottom: 5px; opacity: 0.8; letter-spacing: 1px; }
-        .score-num { color: #ed5e21; font-size: 4.5rem; font-weight: 700; line-height: 1; display: block; } /* display block pour aller à la ligne */
+        .score-num { color: #ed5e21; font-size: 4.5rem; font-weight: 700; line-height: 1; display: block; }
         
         #leaderboard { margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); text-align: left; font-size: 0.85rem; }
         .leader-entry { display: flex; justify-content: space-between; color: #ffbc42; margin-bottom: 3px; }
 
-        /* --- GAME OVER (Plus grand et transparent) --- */
         #game-over {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-family: 'BPReplay', sans-serif; display: none; text-align: center;
             background: rgba(19, 35, 59, 0.85); 
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             padding: 50px; border-radius: 40px;
             border: 5px solid #ed5e21; z-index: 2000; 
-            width: 85%; max-width: 650px; color: white; /* Largeur augmentée */
+            width: 85%; max-width: 650px; color: white;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
 
         #admin-trigger {
-            position: absolute; bottom: 10px; right: 15px; 
+            position: fixed; bottom: 10px; right: 15px; 
             background: none; border: none; color: rgba(255,255,255,0.2);
-            font-size: 0.7rem; cursor: pointer; z-index: 9999;
+            font-size: 0.7rem; cursor: pointer; z-index: 10000;
+            padding: 15px; /* Zone de clic élargie */
         }
 
         canvas { display: block; }
@@ -157,9 +152,9 @@
         </div>
     </div>
 
-    
     <canvas id="gameCanvas"></canvas>
     <button id="admin-trigger" onclick="openAdminMenu()">admin</button>
+
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -193,7 +188,11 @@
             };
             currentSession = 1; sessionScores = [];
             document.getElementById('registration-screen').style.display = 'none';
-            startNewGame();
+            
+            // CORRECTIF CLAVIER : Petit délai pour laisser l'écran reprendre sa taille
+            setTimeout(() => {
+                startNewGame();
+            }, 150);
         }
 
         function startNewGame() {
@@ -220,7 +219,7 @@
             } else {
                 const total = sessionScores.reduce((a,b) => a+b, 0);
                 const max = Math.max(...sessionScores);
-                document.getElementById('session-score-msg').innerHTML = `Score : ${score}<br><br><span style="color:#ffbc42">Bien joué ${currentPlayer.pseudo} : vous avez compté ${max} colonies caractéristiques !</span>`;
+                document.getElementById('session-score-msg').innerHTML = `Score : ${score}<br><br><span style="color:#ffbc42">Bien joué ${currentPlayer.pseudo} : votre record est de ${max} colonies caractéristiques !</span>`;
                 btn.innerText = "Terminer";
                 savePlayerData(total, max);
             }
@@ -253,67 +252,37 @@
             document.getElementById('best-value').innerText = top.length > 0 ? top[0].best : 0;
         }
 
-function openAdminMenu() {
-    // Le message du prompt est "Mot de passe :" pour être plus clair
-    const mdp = prompt("Mot de passe :");
-    if (mdp === "jvlivs") {
-        const action = prompt("Tapez 'CSV' pour exporter les données ou 'RESET' pour tout effacer :");
-        if (action) {
-            const choix = action.toUpperCase();
-            if (choix === 'CSV') {
-                exportCSV();
-            } else if (choix === 'RESET') {
-                if (confirm("ATTENTION : Cela va effacer tous les scores et le TOP 3. Confirmer ?")) {
-                    localStorage.removeItem('whack_players');
-                    updateLeaderboardDisplay();
-                    alert("Données réinitialisées.");
+        function openAdminMenu() {
+            const mdp = prompt("Mot de passe :");
+            if (mdp === "jvlivs") {
+                const action = prompt("CSV ou RESET ?").toUpperCase();
+                if (action === 'CSV') exportCSV();
+                else if (action === 'RESET') {
+                    if (confirm("Effacer tout ?")) { localStorage.removeItem('whack_players'); updateLeaderboardDisplay(); }
                 }
             }
         }
-    } else if (mdp !== null) {
-        alert("Mot de passe incorrect.");
-    }
-}
 
-function exportCSV() {
-    let players = JSON.parse(localStorage.getItem('whack_players') || '[]');
-    if (players.length === 0) {
-        alert("Aucune donnée à exporter.");
-        return;
-    }
-
-    // Création du contenu CSV
-    let csvContent = "\uFEFF"; // BOM pour que l'Excel reconnaisse les accents (Prénom, etc.)
-    csvContent += "Date;Heure;Pseudo;Prenom;Nom;Email;S1;S2;S3;Record\n";
-    
-    players.forEach(p => {
-        csvContent += `${p.date};${p.heure};${p.pseudo};${p.prenom};${p.nom};${p.email};${p.s1};${p.s2};${p.s3};${p.best}\n`;
-    });
-
-    // Création du lien de téléchargement compatible Tablettes
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    
-    link.setAttribute("href", url);
-    link.setAttribute("download", `WhackACol_Data_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
-    link.style.visibility = 'hidden';
-    
-    document.body.appendChild(link);
-    link.click(); // Déclenche le téléchargement
-    document.body.removeChild(link);
-    
-    // Message de confirmation car sur tablette le téléchargement est parfois discret (en arrière-plan)
-    alert("Le fichier CSV a été généré. Vérifiez votre dossier 'Téléchargements'.");
-}
+        function exportCSV() {
+            let players = JSON.parse(localStorage.getItem('whack_players') || '[]');
+            if (players.length === 0) return;
+            let csv = "\uFEFFDate;Heure;Pseudo;Prenom;Nom;Email;S1;S2;S3;Record\n";
+            players.forEach(p => csv += `${p.date};${p.heure};${p.pseudo};${p.prenom};${p.nom};${p.email};${p.s1};${p.s2};${p.s3};${p.best}\n`);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Data_WhackACol.csv`;
+            link.click();
+        }
 
         function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            const minSide = Math.min(canvas.width, canvas.height);
-            petriRadius = (minSide * 0.85) / 2;
-            maxColonySize = petriRadius * 0.4; 
+            // CORRECTIF TAILLE : On se base toujours sur la hauteur pour la boîte
+            petriRadius = (window.innerHeight * 0.85) / 2;
+            maxColonySize = petriRadius * 0.35; 
         }
+
         window.addEventListener('resize', resize);
         resize();
 
