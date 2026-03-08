@@ -33,10 +33,13 @@
         .abe-logo { position: absolute; top: 20px; right: 25px; width: 140px; z-index: 500; }
         #game-logo-top { position: absolute; top: 20px; left: 25px; width: 200px; z-index: 10; }
 
-        /* --- ÉCRANS --- */
+        /* --- ÉCRANS (Transparence et flou) --- */
         .overlay-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(19, 35, 59, 0.9); display: flex; flex-direction: column;
+            background-color: rgba(19, 35, 59, 0.7); /* Plus transparent */
+            backdrop-filter: blur(10px); /* Effet de flou arrière-plan */
+            -webkit-backdrop-filter: blur(10px);
+            display: flex; flex-direction: column;
             justify-content: center; align-items: center; z-index: 1000; text-align: center;
         }
 
@@ -51,44 +54,52 @@
         .btn-main:active { transform: translateY(4px); box-shadow: 0 4px 0 #b34316; }
 
         /* --- FORMULAIRE --- */
-        .form-container { background: rgba(255,255,255,0.08); padding: 30px; border-radius: 25px; border: 2px solid #ed5e21; width: 90%; max-width: 420px; }
+        .form-container { 
+            background: rgba(255,255,255,0.1); 
+            padding: 30px; border-radius: 25px; border: 2px solid #ed5e21; 
+            width: 90%; max-width: 420px;
+            backdrop-filter: blur(5px);
+        }
         .form-container input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 10px; border: 2px solid transparent; font-size: 1.1rem; box-sizing: border-box; }
-        .form-container input:focus { border-color: #ed5e21; outline: none; }
         
-        /* Bouton Spécifique Formulaire en Roboto */
         .btn-ready {
             background-color: #ed5e21; color: white; font-family: 'Roboto', sans-serif;
             font-weight: bold; font-size: 1.4rem; padding: 15px; border: none; border-radius: 10px;
             cursor: pointer; width: 100%; margin-top: 15px; box-shadow: 0 4px 0 #b34316;
         }
 
-        /* --- INTERFACE --- */
+        /* --- INTERFACE SCORES --- */
         .score-box {
             position: absolute; top: 50%; transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.15); padding: 15px; border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15); padding: 20px; border-radius: 20px;
             border: 2px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px);
             text-align: center; z-index: 10; min-width: 150px; color: white;
         }
         #score-container { left: 20px; }
         #best-container { right: 20px; }
         
-        .score-num { color: #ed5e21; font-size: 4rem; font-weight: 700; line-height: 1; }
-        #leaderboard { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); text-align: left; font-size: 0.85rem; }
+        .score-label { font-size: 0.75rem; font-weight: bold; display: block; margin-bottom: 5px; opacity: 0.8; letter-spacing: 1px; }
+        .score-num { color: #ed5e21; font-size: 4.5rem; font-weight: 700; line-height: 1; display: block; } /* display block pour aller à la ligne */
+        
+        #leaderboard { margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); text-align: left; font-size: 0.85rem; }
         .leader-entry { display: flex; justify-content: space-between; color: #ffbc42; margin-bottom: 3px; }
 
-        /* --- GAME OVER --- */
+        /* --- GAME OVER (Plus grand et transparent) --- */
         #game-over {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             font-family: 'BPReplay', sans-serif; display: none; text-align: center;
-            background: rgba(19, 35, 59, 0.98); padding: 40px; border-radius: 35px;
-            border: 5px solid #ed5e21; z-index: 2000; width: 80%; max-width: 450px; color: white;
+            background: rgba(19, 35, 59, 0.85); 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            padding: 50px; border-radius: 40px;
+            border: 5px solid #ed5e21; z-index: 2000; 
+            width: 85%; max-width: 650px; color: white; /* Largeur augmentée */
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
 
-        /* Bouton Admin Discret */
         #admin-trigger {
             position: absolute; bottom: 10px; right: 15px; 
             background: none; border: none; color: rgba(255,255,255,0.2);
-            font-size: 0.7rem; cursor: pointer; z-index: 3000;
+            font-size: 0.7rem; cursor: pointer; z-index: 9999;
         }
 
         canvas { display: block; }
@@ -123,32 +134,32 @@
     </div>
 
     <div id="game-over">
-        <h1 id="go-title" style="color:#ed5e21; margin:0; font-size: 2.5rem;">GAME OVER</h1>
-        <p id="reason" style="font-size:1.2rem; color:#ff9f43; margin: 15px 0;"></p>
-        <p id="session-score-msg" style="font-size:1.3rem; font-family:'Roboto'"></p>
-        <button id="next-btn" class="btn-main" style="font-size: 1.3rem; padding: 12px 30px;" onclick="nextSession()">Suivant</button>
+        <h1 id="go-title" style="color:#ed5e21; margin:0; font-size: 3rem;">GAME OVER</h1>
+        <p id="reason" style="font-size:1.5rem; color:#ff9f43; margin: 20px 0; line-height: 1.2;"></p>
+        <p id="session-score-msg" style="font-size:1.4rem; font-family:'Roboto'; margin-bottom: 25px;"></p>
+        <button id="next-btn" class="btn-main" style="font-size: 1.5rem; padding: 15px 40px;" onclick="nextSession()">Suivant</button>
     </div>
 
     <img src="logo-wack-a-col.svg" id="game-logo-top">
     
     <div id="score-container" class="score-box">
-        <span style="font-size:0.7rem; font-weight:bold;">SCORE</span>
+        <span class="score-label">SCORE</span>
         <span id="score-value" class="score-num">0</span>
-        <span id="session-label" style="display:block; margin-top:5px; opacity:0.8; font-size:0.8rem;">Session 1 / 3</span>
+        <span id="session-label" style="display:block; margin-top:10px; opacity:0.8; font-size:0.8rem;">Session 1 / 3</span>
     </div>
 
     <div id="best-container" class="score-box">
-        <span style="font-size:0.7rem; font-weight:bold;">RECORD</span>
-        <span id="best-value" class="score-num" style="font-size: 3rem; color:#ffbc42">0</span>
+        <span class="score-label">RECORD</span>
+        <span id="best-value" class="score-num" style="font-size: 3.5rem; color:#ffbc42">0</span>
         <div id="leaderboard">
-            <div style="font-weight:bold; margin-bottom:5px; font-size:0.65rem; opacity:0.6;">TOP 3</div>
+            <div style="font-weight:bold; margin-bottom:8px; font-size:0.7rem; opacity:0.6; letter-spacing:1px">TOP 3</div>
             <div id="top-entries"></div>
         </div>
     </div>
 
-    <button id="admin-trigger" onclick="openAdminMenu()">admin</button>
+    
     <canvas id="gameCanvas"></canvas>
-
+    <button id="admin-trigger" onclick="openAdminMenu()">admin</button>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -209,7 +220,7 @@
             } else {
                 const total = sessionScores.reduce((a,b) => a+b, 0);
                 const max = Math.max(...sessionScores);
-                document.getElementById('session-score-msg').innerHTML = `Score : ${score}<br><br><span style="color:#ffbc42">Bien ${currentPlayer.pseudo} : vous avez compté ${total} colonies caractéristiques !</span>`;
+                document.getElementById('session-score-msg').innerHTML = `Score : ${score}<br><br><span style="color:#ffbc42">Bien joué ${currentPlayer.pseudo} : vous avez compté ${max} colonies caractéristiques !</span>`;
                 btn.innerText = "Terminer";
                 savePlayerData(total, max);
             }
@@ -242,28 +253,59 @@
             document.getElementById('best-value').innerText = top.length > 0 ? top[0].best : 0;
         }
 
-        function openAdminMenu() {
-            const mdp = prompt("Admin :");
-            if(mdp === "jvlivs") {
-                const action = prompt("CSV ou RESET ?");
-                if(action && action.toUpperCase() === 'CSV') exportCSV();
-                else if(action && action.toUpperCase() === 'RESET') {
-                    if(confirm("Effacer tout ?")) { localStorage.removeItem('whack_players'); updateLeaderboardDisplay(); }
+function openAdminMenu() {
+    // Le message du prompt est "Mot de passe :" pour être plus clair
+    const mdp = prompt("Mot de passe :");
+    if (mdp === "jvlivs") {
+        const action = prompt("Tapez 'CSV' pour exporter les données ou 'RESET' pour tout effacer :");
+        if (action) {
+            const choix = action.toUpperCase();
+            if (choix === 'CSV') {
+                exportCSV();
+            } else if (choix === 'RESET') {
+                if (confirm("ATTENTION : Cela va effacer tous les scores et le TOP 3. Confirmer ?")) {
+                    localStorage.removeItem('whack_players');
+                    updateLeaderboardDisplay();
+                    alert("Données réinitialisées.");
                 }
             }
         }
+    } else if (mdp !== null) {
+        alert("Mot de passe incorrect.");
+    }
+}
 
-        function exportCSV() {
-            let players = JSON.parse(localStorage.getItem('whack_players') || '[]');
-            if(players.length === 0) return;
-            let csv = "Date;Heure;Pseudo;Prenom;Nom;Email;S1;S2;S3;Total;Best\n";
-            players.forEach(p => csv += `${p.date};${p.heure};${p.pseudo};${p.prenom};${p.nom};${p.email};${p.s1};${p.s2};${p.s3};${p.total};${p.best}\n`);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `Data_Salon.csv`;
-            link.click();
-        }
+function exportCSV() {
+    let players = JSON.parse(localStorage.getItem('whack_players') || '[]');
+    if (players.length === 0) {
+        alert("Aucune donnée à exporter.");
+        return;
+    }
+
+    // Création du contenu CSV
+    let csvContent = "\uFEFF"; // BOM pour que l'Excel reconnaisse les accents (Prénom, etc.)
+    csvContent += "Date;Heure;Pseudo;Prenom;Nom;Email;S1;S2;S3;Record\n";
+    
+    players.forEach(p => {
+        csvContent += `${p.date};${p.heure};${p.pseudo};${p.prenom};${p.nom};${p.email};${p.s1};${p.s2};${p.s3};${p.best}\n`;
+    });
+
+    // Création du lien de téléchargement compatible Tablettes
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `WhackACol_Data_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click(); // Déclenche le téléchargement
+    document.body.removeChild(link);
+    
+    // Message de confirmation car sur tablette le téléchargement est parfois discret (en arrière-plan)
+    alert("Le fichier CSV a été généré. Vérifiez votre dossier 'Téléchargements'.");
+}
 
         function resize() {
             canvas.width = window.innerWidth;
