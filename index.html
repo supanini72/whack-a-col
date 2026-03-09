@@ -119,7 +119,7 @@
         <div class="form-container">
             <img src="logo-wack-a-col.svg" style="width:180px; margin-bottom:20px;">
             <form id="regForm" onsubmit="event.preventDefault(); validateRegistration();">
-                <input type="text" id="p_pseudo" placeholder="Pseudo" required>
+                <input type="text" id="p_pseudo" placeholder="Entreprise" required>
                 <input type="text" id="p_prenom" placeholder="Prénom" required>
                 <input type="text" id="p_nom" placeholder="Nom" required>
                 <input type="email" id="p_email" placeholder="Email" required>
@@ -219,7 +219,7 @@
             } else {
                 const total = sessionScores.reduce((a,b) => a+b, 0);
                 const max = Math.max(...sessionScores);
-                document.getElementById('session-score-msg').innerHTML = `Score : ${score}<br><br><span style="color:#ffbc42">Bien joué ${currentPlayer.pseudo} : votre record est de ${max} colonies caractéristiques !</span>`;
+                document.getElementById('session-score-msg').innerHTML = `Score : ${score}<br><br><span style="color:#ffbc42">Bien joué ${currentPlayer.prenom} : votre record est de ${max} colonies caractéristiques !</span>`;
                 btn.innerText = "Terminer";
                 savePlayerData(total, max);
             }
